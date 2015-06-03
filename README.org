@@ -1,0 +1,63 @@
+* Mozilla.org developement environment
+** Rationale
+*** www.mozilla.org is in transition from the following technologies
+**** Apache
+**** PHP
+**** Riverbed
+**** MySQL
+*** The majority of the pages on the site are now powered by [[https://bedrock.readthedocs.org][Bedrock]], but
+**** The traffic goes through a recently renamed Riverbed product formerly known as the Zeus Load Balancers (ZLB)
+**** Most requests are served by the riverbed cache
+**** All non-cached requests go to Apache
+**** Apache is configured to route most traffic through [[http://viewvc.svn.mozilla.org/vc/projects/mozilla.com/trunk/includes/prefetch.php?view%3Dmarkup][prefetch.php]] via an [[http://viewvc.svn.mozilla.org/vc/projects/mozilla.com/trunk/.htaccess?view%3Dmarkup][.htaccess]] file in the root of the mozilla.com svn repo
+**** In order to route pages in apache to bedrock, a passthrough RewriteRule to needs to be added to [[https://github.com/mozilla/bedrock/blob/master/etc/httpd/global.conf][global.conf]] 
+*** Current deployment model is problematic and tightly coupled to legacy infrastructure
+** Goals
+*** replicate the existing production deployment environment as closely as practical within docker containers
+**** centos 7
+**** Apache 2.2
+***** PHP 5.3
+***** Python 2.7
+***** mod_wsgi 4.4
+*** starting from that base environment, develop and test environments that move away from legacy technologies
+**** alter apache config to replace mod_wsgi with proxy to gunicorn
+**** default to python instead of php
+**** eliminate php
+**** move all apache redirects to python
+**** replace apache with nginx
+**** replace mysql with postgresql
+**** add varnish cache
+*** full testing environment
+**** python unit tests
+**** javascript unit tests
+**** javascript behavior tests
+***** casperjs 
+****** phantomjs headless webkit
+****** slimerjs driving containerized firefox
+**** mcom-tests
+***** python requests
+***** python driving selenium full browser tests via 
+****** containerized firefox
+****** saucelabs
+*** Deployable to [[http://deis.io/][Deis]]
+** Non-goals
+*** replicating the current "Chief" deployment system within Docker containers
+**** Chief depends on ssh and rsync
+**** while it is certainly possible to enable ssh within containers, it is usually best to avoid this
+* Troubleshooting
+** Hijack is incompatible with use of CloseNotifier
+If you see something similar to the following while building:
+
+Removing intermediate container 01ca4badffef
+Successfully built 749f3e69659e
+http: Hijack is incompatible with use of CloseNotifier
++ trap - SIGTERM
++ kill -- -4825
+Terminated: 15
+
+Try running the command again, it usually works the second time.
+This is a known issue with docker-compose 1.2.0, see
+https://github.com/docker/docker/issues/12845 for more details.
+This was fixed in https://github.com/docker/compose/pull/1374 but as of
+this writing docker-compose 1.3.0 has not been released-- however, you
+can try installing the latest RC: https://github.com/docker/compose/releases

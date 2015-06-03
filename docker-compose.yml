@@ -1,0 +1,22 @@
+dev:
+  build: bedrock-base
+  command: python manage.py runserver 0.0.0.0:8000
+  ports:
+    - "8000:8000"
+  volumes:
+    - bedrock-base/bedrock:/app
+  environment: &env
+    - PYTHONUNBUFFERED=1
+    - PYTHONDONTWRITEBYTECODE=1
+    - TERM=xterm-256color
+b2d:
+  extends:
+    file: docker-compose.yml
+    service: dev
+  volumes:
+    - /var/lib/docker/volumes/mozilla/bedrock:/app
+apache:
+  build: apache
+  ports:
+    - "8080:80"
+  command: httpd -DFOREGROUND
