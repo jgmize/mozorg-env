@@ -1,0 +1,33 @@
+#!/bin/bash -ex
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+BIN=${0%/*}
+PROJECT=mozorg
+
+if [ -e $BIN/../.env ]; then
+    . $BIN/../.env
+fi
+
+. $BIN/b2d
+if [ $B2D ]; then
+    $BIN/b2d-bedrock-fswatch-rsync
+fi
+
+if [ ! "$(docker images | grep ${PROJECT}_bedrock)" ]; then
+   $BIN/compose build bedrock
+fi
+
+if [ ! "$(docker images | grep mysql)" ]; then
+   $BIN/compose pull mysql
+fi
+
+$BIN/compose up mysql bedrock &
+sleep 10 #TODO: something more deterministic
+
+MYSQL=${PROJECT}_mysql_1
+docker exec $MYSQL bash -c 'echo "create database if not exists bedrock;" | mysql --password=$MYSQL_ROOT_PASSWORD'
+
+BEDROCK=${PROJECT}_bedrock_1
+BEDROCK_PATH=/app
+docker exec $BEDROCK bash -c "cd $BEDROCK_PATH; if [ ! -e .synced ]; then bin/sync_all && touch .synced; fi"
+echo Ctrl+C to exit
+cat # wait until killed

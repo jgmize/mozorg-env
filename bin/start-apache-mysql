@@ -1,0 +1,44 @@
+#!/bin/bash -ex
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+BIN=${0%/*}
+PROJECT=mozorg
+
+if [ -e $BIN/../.env ]; then
+    . $BIN/../.env
+fi
+
+. $BIN/b2d
+if [ $B2D ]; then
+    $BIN/b2d-apache-fswatch-rsync
+fi
+
+if [ ! "$(docker images | grep ${PROJECT}_apache)" ]; then
+   if [ ! -d $BIN/../apache/rpm ]; then
+      cd $BIN/../apache
+      curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
+   fi
+   # TODO: file PR to add httpd conf files to bedrock
+   if [ ! -e $BIN/../bedrock/etc/httpd/httpd.conf ]; then
+      cp $BIN/../apache/etc/httpd/conf/httpd.conf $BIN/../bedrock/etc/httpd/httpd.conf
+   fi
+   if [ ! -e $BIN/../bedrock/etc/httpd/www.mozilla.org.conf ]; then
+      cp $BIN/../apache/etc/httpd/conf.d/www.mozilla.org.conf $BIN/../bedrock/etc/httpd/www.mozilla.org.conf
+   fi
+   $BIN/compose build apache
+fi
+
+if [ ! "$(docker images | grep mysql)" ]; then
+   $BIN/compose pull mysql
+fi
+
+$BIN/compose up mysql apache &
+sleep 10 #TODO: something more deterministic
+
+MYSQL=${PROJECT}_mysql_1
+docker exec $MYSQL bash -c 'echo "create database if not exists bedrock;" | mysql --password=$MYSQL_ROOT_PASSWORD'
+
+APACHE=${PROJECT}_apache_1
+BEDROCK_PATH=/data/www/www.mozilla.org-django/bedrock
+docker exec $APACHE bash -c "cd $BEDROCK_PATH; if [ ! -e .synced ]; then bin/sync_all && touch .synced; fi"
+echo Ctrl+C to exit
+cat # wait until killed

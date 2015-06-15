@@ -8,16 +8,17 @@ bedrock:
     file: base.yml
     service: bedrock
   volumes:
-    - bedrock:/app
+    - /var/lib/docker/volumes/mozilla/bedrock:/app
   links:
     - mysql
+
 
 apache:
   extends:
     file: base.yml
     service: apache
   volumes:
-    - apache/mozilla.com:/data/www/www.mozilla.org
-    - bedrock:/data/www/www.mozilla.org-django/bedrock
+    - /var/lib/docker/volumes/mozilla/mozilla.com:/data/www/www.mozilla.org
+    - /var/lib/docker/volumes/mozilla/bedrock:/data/www/www.mozilla.org-django/bedrock
   links:
     - mysql

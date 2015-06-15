@@ -1,0 +1,20 @@
+#!/bin/bash -ex
+SERVICE=$1
+if [ ! $SERVICE ]; then
+    echo "service name required"
+    exit 1
+fi
+BIN=${0%/*}
+. $BIN/b2d
+PROJECT=mozorg
+CONTAINER="${PROJECT}_${SERVICE}_1"
+RUN=("${@:2}")
+if [ ! "$RUN" ]; then
+    RUN=bash
+fi
+
+if [ "$(docker ps | grep $CONTAINER)" ]; then
+   docker exec -it $CONTAINER ${RUN[@]}
+else
+    $BIN/compose run $SERVICE ${RUN[@]}
+fi
