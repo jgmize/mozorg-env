@@ -18,7 +18,7 @@ if [ ! "$(docker images | grep ${PROJECT}_bedrock)" ]; then
    $BIN/compose build bedrock
 fi
 
-if [ ! "$(docker images | grep mysql)" ]; then
+if [ ! "$(docker images | grep mysql | awk '{print $2}' | grep 5.6)" ]; then
    $BIN/compose pull mysql
 fi
 

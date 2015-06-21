@@ -33,8 +33,8 @@ if [ ! "$(docker images | grep ${PROJECT}_apache)" ]; then
    $BIN/compose build apache
 fi
 
-if [ ! "$(docker images | grep mysql)" ]; then
-   $BIN/compose pull mysql
+if [ ! "$(docker images | grep mysql | awk '{print $2}' | grep 5.6)" ]; then
+    $BIN/compose pull mysql
 fi
 
 $BIN/compose up mysql apache &
