@@ -1,5 +1,4 @@
 #!/bin/bash -ex
-trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 BIN=${0%/*}
 PROJECT=mozorg
 
