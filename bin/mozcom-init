@@ -1,0 +1,16 @@
+#!/bin/bash -ex
+if [ ! $MOZCOM ]; then
+    BIN=${0%/*}
+    export MOZCOM=$BIN/../apache/mozilla.com
+fi
+
+if [ ! -e $MOZCOM ]; then
+    svn co https://svn.mozilla.org/projects/mozilla.com/trunk $MOZCOM
+    cd $MOZCOM/includes
+    cp config.inc.php-dist config.inc.php
+    cd ..
+    svn co https://svn.mozilla.org/projects/mozilla.org/trunk org
+    cd org/includes
+    cp config.inc.php-dist config.inc.php
+    cd $BIN/..
+fi

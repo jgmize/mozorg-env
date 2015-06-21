@@ -1,0 +1,27 @@
+#!/bin/bash -ex
+VOLUMES=/var/lib/docker/volumes
+TARGET=$VOLUMES/mozilla
+
+boot2docker ssh "sudo mkdir -p $TARGET && sudo chown -R docker $VOLUMES && tce-load -wi rsync"
+
+if [ ! "$(which fswatch)" ]; then
+    if [ $(uname) == "Darwin" ]; then
+        if [ ! "$(which brew)" ]; then
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        fi
+        brew install fswatch
+    else
+        echo This script requires fswatch: https://github.com/emcrisostomo/fswatch/blob/master/INSTALL
+        exit 1
+    fi
+fi
+
+RSYNC_ARGS=(
+    -e "ssh -i $HOME/.ssh/id_boot2docker"
+    -avzk
+    --exclude .git
+    --exclude .svn
+    #--exclude-from .gitignore  # this excludes settings/local.py
+    $1 docker@$(boot2docker ip):$TARGET)
+rsync "${RSYNC_ARGS[@]}"
+fswatch -o $1 | xargs -n1 -I{} rsync "${RSYNC_ARGS[@]}"

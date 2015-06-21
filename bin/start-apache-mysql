@@ -1,15 +1,21 @@
 #!/bin/bash -ex
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 BIN=${0%/*}
+HTTPDCONF=$BIN/../apache/etc/httpd/conf
 PROJECT=mozorg
+BEDROCK_PATH=/data/www/www.mozilla.org-django/bedrock
 
 if [ -e $BIN/../.env ]; then
     . $BIN/../.env
 fi
 
+. $BIN/bedrock-init
+. $BIN/mozcom-init
 . $BIN/b2d
+
 if [ $B2D ]; then
-    $BIN/b2d-apache-fswatch-rsync
+    $BIN/b2d-fswatch-rsync $BEDROCK &
+    $BIN/b2d-fswatch-rsync $MOZCOM &
 fi
 
 if [ ! "$(docker images | grep ${PROJECT}_apache)" ]; then
@@ -18,11 +24,11 @@ if [ ! "$(docker images | grep ${PROJECT}_apache)" ]; then
       curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
    fi
    # TODO: file PR to add httpd conf files to bedrock
-   if [ ! -e $BIN/../bedrock/etc/httpd/httpd.conf ]; then
-      cp $BIN/../apache/etc/httpd/conf/httpd.conf $BIN/../bedrock/etc/httpd/httpd.conf
+   if [ ! -e $BEDROCK/etc/httpd/httpd.conf ]; then
+      cp $HTTPDCONF/httpd.conf $BEDROCK/etc/httpd/httpd.conf
    fi
-   if [ ! -e $BIN/../bedrock/etc/httpd/www.mozilla.org.conf ]; then
-      cp $BIN/../apache/etc/httpd/conf.d/www.mozilla.org.conf $BIN/../bedrock/etc/httpd/www.mozilla.org.conf
+   if [ ! -e $BEDROCK/etc/httpd/www.mozilla.org.conf ]; then
+       cp $HTTPDCONF.d/www.mozilla.org.conf $BEDROCK/etc/httpd/www.mozilla.org.conf
    fi
    $BIN/compose build apache
 fi
@@ -34,11 +40,8 @@ fi
 $BIN/compose up mysql apache &
 sleep 10 #TODO: something more deterministic
 
-MYSQL=${PROJECT}_mysql_1
-docker exec $MYSQL bash -c 'echo "create database if not exists bedrock;" | mysql --password=$MYSQL_ROOT_PASSWORD'
+docker exec ${PROJECT}_mysql_1 bash -c 'echo "create database if not exists bedrock;" | mysql --password=$MYSQL_ROOT_PASSWORD'
 
-APACHE=${PROJECT}_apache_1
-BEDROCK_PATH=/data/www/www.mozilla.org-django/bedrock
-docker exec $APACHE bash -c "cd $BEDROCK_PATH; if [ ! -e .synced ]; then bin/sync_all && touch .synced; fi"
+docker exec ${PROJECT}_apache_1 bash -c "cd $BEDROCK_PATH; if [ ! -e .synced ]; then bin/sync_all && touch .synced; fi"
 echo Ctrl+C to exit
 cat # wait until killed

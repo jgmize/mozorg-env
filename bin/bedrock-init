@@ -1,0 +1,14 @@
+#!/bin/bash -ex
+if  [ ! $BEDROCK ]; then
+    BIN=${0%/*}
+    export BEDROCK=$BIN/../apache/bedrock/base/bedrock
+fi
+
+if [ ! -e $BEDROCK ]; then
+    git clone --recursive https://github.com/mozilla/bedrock $BEDROCK
+fi
+
+#TODO: eliminate settings/local.py in favor of env variables
+if [ ! -e $BEDROCK/bedrock/settings/local.py ]; then
+    cp $BEDROCK/bedrock/settings/local.py-dist $BEDROCK/bedrock/settings/local.py
+fi
