@@ -11,3 +11,7 @@ RUN python /app/bin/peep.py install -r /app/requirements/dev.txt
 
 RUN npm install -g grunt-cli
 RUN npm install -g jshint
+
+RUN apt-get install -y libmemcached-dev
+COPY bedrock/requirements/prod.txt /app/requirements/prod.txt
+RUN python /app/bin/peep.py install -r /app/requirements/prod.txt
