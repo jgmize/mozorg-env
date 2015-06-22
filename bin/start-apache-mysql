@@ -43,5 +43,6 @@ sleep 10 #TODO: something more deterministic
 docker exec ${PROJECT}_mysql_1 bash -c 'echo "create database if not exists bedrock;" | mysql --password=$MYSQL_ROOT_PASSWORD'
 
 docker exec ${PROJECT}_apache_1 bash -c "cd $BEDROCK_PATH; if [ ! -e .synced ]; then bin/sync_all && touch .synced; fi"
+docker exec ${PROJECT}_apache_1 bash -c "cd $BEDROCK_PATH; ./manage.py collectstatic --noinput"
 echo Ctrl+C to exit
 cat # wait until killed
