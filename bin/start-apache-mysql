@@ -19,18 +19,24 @@ if [ $B2D ]; then
 fi
 
 if [ ! "$(docker images | grep ${PROJECT}_apache)" ]; then
-   if [ ! -d $BIN/../apache/rpm ]; then
-      cd $BIN/../apache
-      curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
-   fi
-   # TODO: file PR to add httpd conf files to bedrock
-   if [ ! -e $BEDROCK/etc/httpd/httpd.conf ]; then
-      cp $HTTPDCONF/httpd.conf $BEDROCK/etc/httpd/httpd.conf
-   fi
-   if [ ! -e $BEDROCK/etc/httpd/www.mozilla.org.conf ]; then
-       cp $HTTPDCONF.d/www.mozilla.org.conf $BEDROCK/etc/httpd/www.mozilla.org.conf
-   fi
-   $BIN/compose build apache
+    # TODO: file PR to add httpd conf files to bedrock
+    if [ ! -e $BEDROCK/etc/httpd/httpd.conf ]; then
+        cp $HTTPDCONF/httpd.conf $BEDROCK/etc/httpd/httpd.conf
+    fi
+
+    if [ ! -e $BEDROCK/etc/httpd/www.mozilla.org.conf ]; then
+        cp $HTTPDCONF.d/www.mozilla.org.conf $BEDROCK/etc/httpd/www.mozilla.org.conf
+    fi
+
+    if [ "$1" == "-b" ]; then
+        if [ ! -d $BIN/../apache/rpm ]; then
+            cd $BIN/../apache
+            curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
+        fi
+        $BIN/compose build apache
+    else
+        $BIN/compose pull apache
+    fi
 fi
 
 if [ ! "$(docker images | grep mysql | awk '{print $2}' | grep 5.6)" ]; then

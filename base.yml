@@ -5,6 +5,13 @@ environment: &env
 - MYSQL_ROOT_PASSWORD=bedrock
 
 bedrock:
+  image: mozorg/bedrock
+  command: python manage.py runserver 0.0.0.0:8000
+  ports:
+    - "8000:8000"
+  environment: *env
+
+bedrockbuild:
   build: apache/bedrock/base
   command: python manage.py runserver 0.0.0.0:8000
   ports:
@@ -18,6 +25,13 @@ mysql:
   environment: *env
 
 apache:
+  image: mozorg/apache
+  ports:
+    - "80:80"
+  environment: *env
+  command: httpd -DFOREGROUND
+
+apachebuild:
   build: apache
   ports:
     - "80:80"

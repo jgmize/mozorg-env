@@ -10,12 +10,27 @@ if [ ! "${COMPOSE_ARGS[@]}" ]; then
     COMPOSE_ARGS=(-p $PROJECT)
 fi
 
+if [ "$1" == "-b" ]; then
+    BUILD=1
+    shift
+elif [ "$1" == "build" ]; then
+    BUILD=1
+fi
+
 if [[ ! " ${COMPOSE_ARGS[@]}" =~ " -f " ]]; then
     . $BIN/b2d
     if [ $B2D ]; then
-        COMPOSE_ARGS+=(-f $BIN/../b2d.yml)
+        if [ $BUILD ]; then
+            COMPOSE_ARGS+=(-f $BIN/../b2d-build.yml)
+        else
+            COMPOSE_ARGS+=(-f $BIN/../b2d.yml)
+        fi
     else
-        COMPOSE_ARGS+=(-f $BIN/../docker-compose.yml)
+        if [ $BUILD ]; then
+            COMPOSE_ARGS+=(-f $BIN/../build.yml)
+        else
+            COMPOSE_ARGS+=(-f $BIN/../docker-compose.yml)
+        fi
     fi
 fi
 
