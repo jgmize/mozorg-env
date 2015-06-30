@@ -59,6 +59,8 @@
 - Apache/PHP development
   - bin/start-apache-mysql
   - wait for the "Ctrl+c to exit" line
+  - edit apache/mozilla.com/includes/config.inc.php
+    - $config['server_name'] = 'mozilla.local';
   - visit http://mozilla.local in your browser
 - Stop services
   - bin/compose stop
@@ -89,3 +91,6 @@
 ** Command prompt does not appear when running "bin/dsh bedrock" (or any other service)
 - hit enter again and the command prompt should appear
 - TODO: link to github issue
+** PHP redirects to  empty hostname
+- edit apache/mozilla.com/includes/config.inc.php
+  - $config['server_name'] = 'mozilla.local';
