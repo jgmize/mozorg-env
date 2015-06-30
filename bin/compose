@@ -1,6 +1,7 @@
 #!/bin/bash -ex
 BIN=${0%/*}
 PROJECT=mozorg
+COMPOSE_VERSION=1.2.0  # minimum version
 
 if [ -e $BIN/../.env ]; then
    . $BIN/../.env
@@ -34,7 +35,19 @@ if [[ ! " ${COMPOSE_ARGS[@]}" =~ " -f " ]]; then
     fi
 fi
 
+
 if [ ! "$(which docker-compose)" ]; then
+    INSTALL_COMPOSE=1
+else
+    INSTALLED_VERSION=$(docker-compose --version | awk '{print $2}')
+    if [ $(echo "$INSTALLED_VERSION
+            $COMPOSE_VERSION" | tr -d ' ' |
+            sort -t . -g -k 1,1 -k 2,2 -k 3,3 | tail -n 1) != $INSTALLED_VERSION ]; then
+            # the stock OS X sort command lacks the "--version-sort" option
+        INSTALL_COMPOSE=1
+    fi
+fi
+if [ $INSTALL_COMPOSE ]; then
     curl -L https://github.com/docker/compose/releases/download/1.2.0/docker-compose-`uname -s`-`uname -m` \
          > /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
