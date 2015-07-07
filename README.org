@@ -52,11 +52,30 @@
 - add mozilla.local to /etc/hosts
   - if using boot2docker, use the ip address from the command "boot2docker ip"
   - on Linux, add it as an alias to 127.0.0.1
+- Modify bedrock/settings/local.py
+  #+begin_src python
+  import os
+  DATABASES = {
+      'default': {
+          'ENGINE': 'django.db.backends.mysql',
+          'HOST': os.getenv('DB_HOST', 'mysql'),
+          'NAME': os.getenv('DB_NAME', 'bedrock'),
+          'USER': os.getenv('DB_USER', 'root'),
+          'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
+          'OPTIONS': {'init_command': 'SET storage_engine=InnoDB'},
+          'TEST_NAME': 'test_bedrock',
+          'TEST_CHARSET': 'utf8',
+          'TEST_COLLATION': 'utf8_general_ci',
+      }
+  }
+  #+end_src
 - Bedrock development
+  - in bedrock/settings/local.py, set DEBUG = True
   - bin/start-bedrock-mysql
   - wait for the "Ctrl+c to exit" line
   - visit http://mozilla.local:8000 in your browser
 - Apache/PHP development
+  - in bedrock/settings/local.py, set DEBUG = False
   - bin/start-apache-mysql
   - wait for the "Ctrl+c to exit" line
   - edit apache/mozilla.com/includes/config.inc.php
