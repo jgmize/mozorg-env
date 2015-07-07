@@ -5,18 +5,12 @@ if [ -e $BIN/../.env ]; then
 fi
 
 #TODO: windows support via msys
-if [ $(uname) == "Darwin" ]; then
-    if [ "$DOCKER_HOST" ]; then
-        if [[ "$DOCKER_HOST" =~ "$(boot2docker ip)" ]]; then
-            export B2D=1
-        fi
+if [[ "$(uname)" == "Darwin" && ( -z "$B2D" || "$B2D" == "1" ) ]]; then
+    boot2docker init
+    if [ $(boot2docker status) == "poweroff" ]; then
+        boot2docker start
     else
-        boot2docker init
-        if [ $(boot2docker status) == "poweroff" ]; then
-            boot2docker start
-        else
-            eval $(boot2docker shellinit)
-        fi
-        export B2D=1
+        eval $(boot2docker shellinit)
     fi
+    export B2D=1
 fi

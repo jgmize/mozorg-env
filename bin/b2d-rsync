@@ -1,0 +1,31 @@
+#!/bin/bash -ex
+VOLUMES=/var/lib/docker/volumes
+TARGET=$VOLUMES/mozilla
+
+boot2docker ssh "sudo mkdir -p $TARGET && sudo chown -R docker $VOLUMES"
+# tce-load works with boot2docker < 1.7 with 32bit userspace, but
+# package currently missing for 64bit userspace in boot2docker >= 1.7
+boot2docker ssh "tce-load -wi rsync || (
+                 wget https://people.mozilla.org/~jmize/rsync64.tgz &&
+                 cd / && sudo tar xzf ~/rsync64.tgz)"
+
+if [ ! "$(which fswatch)" ]; then
+    if [ $(uname) == "Darwin" ]; then
+        if [ ! "$(which brew)" ]; then
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        fi
+        brew install fswatch
+    else
+        echo This script requires fswatch: https://github.com/emcrisostomo/fswatch/blob/master/INSTALL
+        exit 1
+    fi
+fi
+
+RSYNC_ARGS=(
+    -e "ssh -i $HOME/.ssh/id_boot2docker -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    -avzk
+    --exclude .git
+    --exclude .svn
+    #--exclude-from .gitignore  # this excludes settings/local.py
+    $1 docker@$(boot2docker ip):$TARGET)
+rsync "${RSYNC_ARGS[@]}"

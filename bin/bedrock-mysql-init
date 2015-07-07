@@ -1,0 +1,16 @@
+#!/bin/bash -ex
+BIN=${0%/*}
+. $BIN/b2d
+. $BIN/bedrock-init
+
+if [ ! "$(docker ps -a | grep ${PROJECT}_mysql_1)" ]; then
+    $BIN/compose pull mysql
+    $BIN/compose up mysql &
+    sleep 10
+    docker exec -it ${PROJECT}_mysql_1 bash -c '
+        while [ "$(mysqladmin ping --password=$MYSQL_ROOT_PASSWORD)" != "mysqld is alive" ]; do
+        sleep 1; echo waiting for mysql; done'
+    docker exec ${PROJECT}_mysql_1 bash -c '
+        echo "create database if not exists bedrock;" | mysql --password=$MYSQL_ROOT_PASSWORD'
+    $BIN/compose stop
+fi

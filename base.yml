@@ -30,6 +30,7 @@ apache:
     - "80:80"
   environment: *env
   command: httpd -DFOREGROUND
+  working_dir: /data/www/www.mozilla.org-django/bedrock
 
 apachebuild:
   build: apache

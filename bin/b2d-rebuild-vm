@@ -1,0 +1,12 @@
+#!/bin/bash -ex
+BIN=${0%/*}
+
+boot2docker delete
+boot2docker init
+boot2docker up
+. $BIN/bedrock-mysql-init
+$BIN/b2d-rsync $BEDROCK
+. $BIN/mozcom-init
+$BIN/b2d-rsync $MOZCOM
+$BIN/compose pull bedrock
+$BIN/compose pull apache
