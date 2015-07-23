@@ -69,10 +69,7 @@
   - bin/dsh bedrock
   - bin/dsh apache
   - bin/dsh mysql
-- Build a new image (only needed when adding new requirements)
-  - bin/compose build bedrock
-  - bin/compose build apache
-- Run a previously built local image
+- Build and run a new image (only needed when adding new requirements)
   - bin/start-apache-mysql -b
   - bin/start-bedrock-mysql -b
 * Troubleshooting
