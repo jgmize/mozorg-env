@@ -46,11 +46,9 @@ $BIN/dsh apache ./manage.py update_product_details
 $BIN/dsh apache ./manage.py collectstatic --noinput
 
 if [ "$B2D" == "1" ]; then
-    $BIN/b2d-open
-elif [ -z "$DOCKER_HOST" ]; then
-    echo You can now open http://localhost:8000 in your browser
+    open http://mozilla.local
 else
-    echo You can now open http://{DOCKER_HOST}:8000 in your browser
+    echo You can now open http://mozilla.local in your browser
 fi
 
 echo Ctrl+C to exit
