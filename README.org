@@ -52,30 +52,11 @@
 - add mozilla.local to /etc/hosts
   - if using boot2docker, use the ip address from the command "boot2docker ip"
   - on Linux, add it as an alias to 127.0.0.1
-- Modify bedrock/settings/local.py
-  #+begin_src python
-  import os
-  DATABASES = {
-      'default': {
-          'ENGINE': 'django.db.backends.mysql',
-          'HOST': os.getenv('DB_HOST', 'mysql'),
-          'NAME': os.getenv('DB_NAME', 'bedrock'),
-          'USER': os.getenv('DB_USER', 'root'),
-          'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
-          'OPTIONS': {'init_command': 'SET storage_engine=InnoDB'},
-          'TEST_NAME': 'test_bedrock',
-          'TEST_CHARSET': 'utf8',
-          'TEST_COLLATION': 'utf8_general_ci',
-      }
-  }
-  #+end_src
 - Bedrock development
-  - in bedrock/settings/local.py, set DEBUG = True
   - bin/start-bedrock-mysql
   - wait for the "Ctrl+c to exit" line
   - visit http://mozilla.local:8000 in your browser
 - Apache/PHP development
-  - in bedrock/settings/local.py, set DEBUG = False
   - bin/start-apache-mysql
   - wait for the "Ctrl+c to exit" line
   - edit apache/mozilla.com/includes/config.inc.php
@@ -104,9 +85,9 @@
 - You can try installing the latest RC, or 1.3 may have been released since
   this document was updated: https://github.com/docker/compose/releases
 ** "Permission denied" OSerror for a css file whe running in apache and DEBUG=True
-- Set DEBUG = False in bedrock/settings/local.py
+- DEBUG should be set to False automatically for the apache container, but can be overridden
+- bedrock/settings/local.py is no longer needed, but supported for backwards compatibility
 - DEBUG will only work for the bedrock container
-- TODO: set DEBUG via environment variable automatically for each container
 ** Command prompt does not appear when running "bin/dsh bedrock" (or any other service)
 - hit enter again and the command prompt should appear
 - TODO: link to github issue

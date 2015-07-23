@@ -3,20 +3,31 @@ environment: &env
 - PYTHONDONTWRITEBYTECODE=1
 - TERM=xterm-256color
 - MYSQL_ROOT_PASSWORD=bedrock
+- DATABASE_URL=mysql://root:bedrock@mysql/bedrock
+- EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+- ALLOWED_HOSTS='*'
+
+debugenv: &debugenv
+- DEBUG=1
+- PYTHONUNBUFFERED=1
+- PYTHONDONTWRITEBYTECODE=1
+- TERM=xterm-256color
+- MYSQL_ROOT_PASSWORD=bedrock
+- DATABASE_URL=mysql://root:bedrock@mysql/bedrock
 
 bedrock:
   image: mozorg/bedrock
   command: python manage.py runserver 0.0.0.0:8000
   ports:
     - "8000:8000"
-  environment: *env
+  environment: *debugenv
 
 bedrockbuild:
   build: apache/bedrock/base
   command: python manage.py runserver 0.0.0.0:8000
   ports:
     - "8000:8000"
-  environment: *env
+  environment: *debugenv
 
 mysql:
   image: mysql:5.6
