@@ -14,13 +14,10 @@ if [ $B2D ]; then
     $BIN/b2d-fswatch-rsync $BEDROCK &
 fi
 
-
-if [ ! "$(docker images | grep ${PROJECT}_bedrock)" ]; then
-    if [ "$1" == "-b" ]; then
-        $BIN/compose build bedrock
-    else
-        $BIN/compose pull bedrock
-    fi
+if [ "$1" == "-b" ]; then
+    $BIN/compose build bedrock
+else
+    $BIN/compose pull bedrock
 fi
 
 $BIN/compose $1 up bedrock &

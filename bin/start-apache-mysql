@@ -26,16 +26,16 @@ if [ ! "$(docker images | grep ${PROJECT}_apache)" ]; then
     if [ ! -e $BEDROCK/etc/httpd/www.mozilla.org.conf ]; then
         cp $HTTPDCONF.d/www.mozilla.org.conf $BEDROCK/etc/httpd/www.mozilla.org.conf
     fi
+fi
 
-    if [ "$1" == "-b" ]; then
-        if [ ! -d $BIN/../apache/rpm ]; then
-            cd $BIN/../apache
-            curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
-        fi
-        $BIN/compose build apache
-    else
-        $BIN/compose pull apache
+if [ "$1" == "-b" ]; then
+    if [ ! -d $BIN/../apache/rpm ]; then
+        cd $BIN/../apache
+        curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
     fi
+    $BIN/compose build apache
+else
+    $BIN/compose pull apache
 fi
 
 $BIN/dsh apache ./manage.py migrate --noinput
