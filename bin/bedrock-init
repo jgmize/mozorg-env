@@ -11,8 +11,3 @@ fi
 if [ ! -e $BEDROCK/locale ]; then
     svn checkout https://svn.mozilla.org/projects/mozilla.com/trunk/locales/ $BEDROCK/locale
 fi
-
-#TODO: eliminate settings/local.py in favor of env variables
-if [ ! -e $BEDROCK/bedrock/settings/local.py ]; then
-    cp $BEDROCK/bedrock/settings/local.py-dist $BEDROCK/bedrock/settings/local.py
-fi
