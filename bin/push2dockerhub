@@ -1,0 +1,21 @@
+#!/bin/bash -ex
+# Needs DOCKER_USERNAME, DOCKER_PASSWORD, DOCKER_REPOSITORY
+# environment variables.
+#
+# To set them go to Job -> Configure -> Build Environment -> Inject
+# passwords and Inject env variables
+BIN=${0%/*}
+PROJECT=$($BIN/project)
+SERVICE=${1:=apache}
+IMAGE=${PROJECT}_${SERVICE}
+
+docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD -e $DOCKER_USERNAME@example.com
+
+TAG="${BEDROCK_BRANCH:=$GIT_COMMIT}"
+docker tag -f ${IMAGE} $DOCKER_REPOSITORY:$TAG
+docker push $DOCKER_REPOSITORY:$TAG
+
+if [[ $LATEST ]]; then
+   docker tag -f ${IMAGE} $DOCKER_REPOSITORY:latest
+   docker push $DOCKER_REPOSITORY:latest
+fi

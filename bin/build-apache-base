@@ -1,0 +1,12 @@
+#!/bin/bash -ex
+BIN=${0%/*}
+trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+
+$BIN/bedrock-init
+
+if [ ! -d $BIN/../apache/rpm ]; then
+    cd $BIN/../apache
+    curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
+fi
+
+$BIN/compose build apache
