@@ -1,0 +1,18 @@
+#!/bin/bash -ex
+# Needs DEIS_CONTROLLER URL, DEIS_USERNAME, DEIS_PASSWORD,
+# DOCKER_REPOSITORY and DEIS_APPLICATION environment variables.
+#
+# To set them go to Job -> Configure -> Build Environment -> Inject
+# passwords and Inject env variables
+#
+DEIS_VERSION=${DEIS_VERSION:="1.8.0"}
+
+if [[ ! "$(which deis)" || "$(deis --version)" != "$DEIS_VERSION" ]]; then
+    TDIR=`mktemp -d`
+    virtualenv $TDIR
+    . $TDIR/bin/activate
+    pip install deis==$DEIS_VERSION
+fi
+
+deis login $DEIS_CONTROLLER  --username $DEIS_USERNAME --password $DEIS_PASSWORD
+deis pull $DOCKER_REPOSITORY:${TAG:=latest} -a $DEIS_APPLICATION
