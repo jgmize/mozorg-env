@@ -1,15 +1,20 @@
 #!/bin/bash -ex
-if  [ ! $BEDROCK ]; then
+if [[ ! $BEDROCK ]]; then
     BIN=${0%/*}
     export BEDROCK=$BIN/../apache/bedrock/base/bedrock
 fi
 
-if [ ! -e $BEDROCK ]; then
+if [[ ! -e $BEDROCK ]]; then
     git clone --recursive https://github.com/mozilla/bedrock $BEDROCK
 fi
 
-if [ ! -L $BEDROCK/locale ]; then
-    if [ -e $BEDROCK/locale ]; then
+if [[ $BEDROCK_BRANCH ]]; then
+    git fetch
+    git checkout $BEDROCK_BRANCH
+fi
+
+if [[ ! -L $BEDROCK/locale ]]; then
+    if [[ -e $BEDROCK/locale ]]; then
         rm -rf $BEDROCK/locale
     fi
     ln -sf /data/www/www.mozilla.org/locales $BEDROCK/locale
