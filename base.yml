@@ -51,8 +51,7 @@ apachebuild:
   command: httpd -DFOREGROUND
 
 apachedeploy:
-  build: apache
-  dockerfile: Dockerfile-deploy
+  build: .
   ports:
     - "80:80"
   environment: *env

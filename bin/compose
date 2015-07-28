@@ -1,20 +1,20 @@
 #!/bin/bash -ex
 BIN=${0%/*}
 PROJECT=$($BIN/project)
-COMPOSE_VERSION=1.3.3  # minimum version
+COMPOSE_VERSION=1.2.0  # minimum version
 
-if [ -e $BIN/../.env ]; then
+if [[ -e $BIN/../.env ]]; then
    . $BIN/../.env
 fi
 
-if [ ! "${COMPOSE_ARGS[@]}" ]; then
+if [[ ! "${COMPOSE_ARGS[@]}" ]]; then
     COMPOSE_ARGS=(-p $PROJECT)
 fi
 
-if [ "$1" == "-b" ]; then
+if [[ "$1" == "-b" ]]; then
     BUILD=1
     shift
-elif [ "$1" == "build" ]; then
+elif [[ "$1" == "build" ]]; then
     BUILD=1
 fi
 
@@ -22,14 +22,14 @@ if [[ ! " ${COMPOSE_ARGS[@]}" =~ " -f " ]]; then
     . $BIN/b2d
     if [[ "$@" =~ "deploy" ]]; then
         COMPOSE_ARGS+=(-f $BIN/../deploy.yml)
-    elif [ $B2D ]; then
-        if [ $BUILD ]; then
+    elif [[ $B2D ]]; then
+        if [[ $BUILD ]]; then
             COMPOSE_ARGS+=(-f $BIN/../b2d-build.yml)
         else
             COMPOSE_ARGS+=(-f $BIN/../b2d.yml)
         fi
     else
-        if [ $BUILD ]; then
+        if [[ $BUILD ]]; then
             COMPOSE_ARGS+=(-f $BIN/../build.yml)
         else
             COMPOSE_ARGS+=(-f $BIN/../docker-compose.yml)
@@ -38,18 +38,19 @@ if [[ ! " ${COMPOSE_ARGS[@]}" =~ " -f " ]]; then
 fi
 
 
-if [ ! "$(which docker-compose)" ]; then
+if [[ ! "$(which docker-compose)" ]]; then
     INSTALL_COMPOSE=1
 else
     INSTALLED_VERSION=$(docker-compose --version | head -n 1 | awk '{print $NF}')
-    if [ $(echo "$INSTALLED_VERSION
+    if [[ $(echo "$INSTALLED_VERSION
             $COMPOSE_VERSION" | tr -d ' ' |
-            sort -t . -g -k 1,1 -k 2,2 -k 3,3 | tail -n 1) != $INSTALLED_VERSION ]; then
+            sort -t . -g -k 1,1 -k 2,2 -k 3,3 | tail -n 1) != $INSTALLED_VERSION ]]; then
             # the stock OS X sort command lacks the "--version-sort" option
         INSTALL_COMPOSE=1
     fi
 fi
-if [ $INSTALL_COMPOSE ]; then
+if [[ $INSTALL_COMPOSE ]]; then
+    if [[ $VIRTUALENV_COMPOSE ]]; then
     curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` \
          > /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
