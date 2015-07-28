@@ -27,5 +27,5 @@ RSYNC_ARGS=(
     --exclude .git
     --exclude .svn
     #--exclude-from .gitignore  # this excludes settings/local.py
-    $1 docker@$(boot2docker ip):$TARGET)
+    $@ docker@$(boot2docker ip):$TARGET)
 rsync "${RSYNC_ARGS[@]}"

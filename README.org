@@ -72,6 +72,10 @@
 - Build and run a new image (only needed when adding new requirements)
   - bin/start-apache-mysql -b
   - bin/start-bedrock-mysql -b
+- Delete old files from boot2docker volumes
+  - bin/b2d-rsync --delete bedrock
+  - bin/b2d-rsync --delete apache/mozilla.com
+  - b2d-rsync script does not delete by default for performance reasons
 * Troubleshooting
 ** Hijack is incompatible with use of CloseNotifier
 - Try running the command again, it usually works the second time.
