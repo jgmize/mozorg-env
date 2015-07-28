@@ -50,7 +50,6 @@ else
     fi
 fi
 if [[ $INSTALL_COMPOSE ]]; then
-    if [[ $VIRTUALENV_COMPOSE ]]; then
     curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` \
          > /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
