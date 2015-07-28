@@ -4,9 +4,15 @@
 #
 # To set them go to Job -> Configure -> Build Environment -> Inject
 # passwords and Inject env variables
+
+if [[ ! $1 ]]; then
+   echo Must specify service
+   exit 1
+fi
+SERVICE=$1
+
 BIN=${0%/*}
 PROJECT=$($BIN/project)
-SERVICE=${1:=apache}
 IMAGE=${PROJECT}_${SERVICE}
 
 docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD -e $DOCKER_USERNAME@example.com
