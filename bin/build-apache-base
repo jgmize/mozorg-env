@@ -1,21 +1,4 @@
 #!/bin/bash -ex
 BIN=${0%/*}
-HTTPDCONF=$BIN/../apache/etc/httpd/conf
-
 . $BIN/bedrock-init
-
-# TODO: file PR to add httpd conf files to bedrock
-if [[ ! -e $BEDROCK/etc/httpd/httpd.conf ]]; then
-    cp $HTTPDCONF/httpd.conf $BEDROCK/etc/httpd/httpd.conf
-fi
-
-if [[ ! -e $BEDROCK/etc/httpd/www.mozilla.org.conf ]]; then
-    cp $HTTPDCONF.d/www.mozilla.org.conf $BEDROCK/etc/httpd/www.mozilla.org.conf
-fi
-
-if [ ! -d $BIN/../apache/rpm ]; then
-    cd $BIN/../apache
-    curl -sS https://people.mozilla.org/~jmize/bedrock-apache-rpms.tgz | tar xz
-fi
-
 $BIN/compose build apache

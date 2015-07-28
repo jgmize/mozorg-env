@@ -19,3 +19,13 @@ if [[ ! -L $BEDROCK/locale ]]; then
     fi
     ln -sf /data/www/www.mozilla.org/locales $BEDROCK/locale
 fi
+
+# TODO: file PR to add httpd conf files to bedrock
+HTTPDCONF=$BIN/../apache/etc/httpd/conf
+if [[ ! -e $BEDROCK/etc/httpd/httpd.conf ]]; then
+    cp $HTTPDCONF/httpd.conf $BEDROCK/etc/httpd/httpd.conf
+fi
+
+if [[ ! -e $BEDROCK/etc/httpd/www.mozilla.org.conf ]]; then
+    cp $HTTPDCONF.d/www.mozilla.org.conf $BEDROCK/etc/httpd/www.mozilla.org.conf
+fi

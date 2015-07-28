@@ -1,5 +1,6 @@
 #!/bin/bash -ex
 BIN=${0%/*}
-$BIN/bedrock-init
-$BIN/mozcom-init
+. $BIN/bedrock-init
+. $BIN/mozcom-init
+
 $BIN/compose build apachedeploy
