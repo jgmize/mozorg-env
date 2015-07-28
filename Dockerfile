@@ -4,5 +4,5 @@ COPY apache/bedrock/base/bedrock /data/www/www.mozilla.org-django/bedrock
 RUN ./manage.py collectstatic --noinput
 RUN ./manage.py update_externalfiles
 RUN ./manage.py update_product_details
-CMD ["httpd -DFOREGROUND"]
+CMD ["/usr/sbin/httpd -DFOREGROUND"]
 EXPOSE 80
