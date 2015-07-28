@@ -5,3 +5,4 @@ RUN ./manage.py collectstatic --noinput
 RUN ./manage.py update_externalfiles
 RUN ./manage.py update_product_details
 CMD ["httpd -DFOREGROUND"]
+EXPOSE 80
