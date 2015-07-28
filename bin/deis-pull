@@ -14,5 +14,5 @@ if [[ ! "$(which deis)" || "$(deis --version)" != "$DEIS_VERSION" ]]; then
     pip install deis==$DEIS_VERSION
 fi
 
-deis login $DEIS_CONTROLLER  --username $DEIS_USERNAME --password $DEIS_PASSWORD
+deis login $DEIS_CONTROLLER --username $DEIS_USERNAME --password $DEIS_PASSWORD
 deis pull $DOCKER_REPOSITORY:${TAG:=latest} -a $DEIS_APPLICATION
