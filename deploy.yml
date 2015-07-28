@@ -1,0 +1,11 @@
+mysql:
+  extends:
+    file: base.yml
+    service: mysql
+
+apachedeploy:
+  extends:
+    file: base.yml
+    service: apachedeploy
+  links:
+    - mysql

@@ -1,0 +1,8 @@
+#!/bin/bash
+DEFAULT=mozorg
+
+if [ -z "${BUILD_TAG}" ]; then
+    echo $DEFAULT
+else
+    echo $(echo ${BUILD_TAG} | sed s/[-_]//g)
+fi

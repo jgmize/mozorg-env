@@ -9,6 +9,7 @@ bedrock:
     service: bedrockbuild
   volumes:
     - bedrock:/app
+    - apache/mozilla.com:/data/www/www.mozilla.org
   links:
     - mysql
 

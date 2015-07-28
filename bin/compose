@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 BIN=${0%/*}
-PROJECT=mozorg
-COMPOSE_VERSION=1.2.0  # minimum version
+PROJECT=$($BIN/project)
+COMPOSE_VERSION=1.3.3  # minimum version
 
 if [ -e $BIN/../.env ]; then
    . $BIN/../.env
@@ -20,7 +20,9 @@ fi
 
 if [[ ! " ${COMPOSE_ARGS[@]}" =~ " -f " ]]; then
     . $BIN/b2d
-    if [ $B2D ]; then
+    if [[ "$@" =~ "deploy" ]]; then
+        COMPOSE_ARGS+=(-f $BIN/../deploy.yml)
+    elif [ $B2D ]; then
         if [ $BUILD ]; then
             COMPOSE_ARGS+=(-f $BIN/../b2d-build.yml)
         else
@@ -39,7 +41,7 @@ fi
 if [ ! "$(which docker-compose)" ]; then
     INSTALL_COMPOSE=1
 else
-    INSTALLED_VERSION=$(docker-compose --version | awk '{print $2}')
+    INSTALLED_VERSION=$(docker-compose --version | head -n 1 | awk '{print $NF}')
     if [ $(echo "$INSTALLED_VERSION
             $COMPOSE_VERSION" | tr -d ' ' |
             sort -t . -g -k 1,1 -k 2,2 -k 3,3 | tail -n 1) != $INSTALLED_VERSION ]; then
@@ -48,7 +50,7 @@ else
     fi
 fi
 if [ $INSTALL_COMPOSE ]; then
-    curl -L https://github.com/docker/compose/releases/download/1.2.0/docker-compose-`uname -s`-`uname -m` \
+    curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` \
          > /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
 fi

@@ -8,6 +8,9 @@ if [ ! -e $BEDROCK ]; then
     git clone --recursive https://github.com/mozilla/bedrock $BEDROCK
 fi
 
-if [ ! -e $BEDROCK/locale ]; then
-    svn checkout https://svn.mozilla.org/projects/mozilla.com/trunk/locales/ $BEDROCK/locale
+if [ ! -L $BEDROCK/locale ]; then
+    if [ -e $BEDROCK/locale ]; then
+        rm -rf $BEDROCK/locale
+    fi
+    ln -sf /data/www/www.mozilla.org/locales $BEDROCK/locale
 fi
