@@ -3,7 +3,7 @@ BIN=${0%/*}
 HTTPDCONF=$BIN/../apache/etc/httpd/conf
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
-$BIN/bedrock-init
+. $BIN/bedrock-init
 
 # TODO: file PR to add httpd conf files to bedrock
 if [[ ! -e $BEDROCK/etc/httpd/httpd.conf ]]; then
