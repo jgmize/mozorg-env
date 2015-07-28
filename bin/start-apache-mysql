@@ -1,8 +1,7 @@
 #!/bin/bash -ex
 BIN=${0%/*}
 HTTPDCONF=$BIN/../apache/etc/httpd/conf
-PROJECT=mozorg
-BEDROCK_PATH=/data/www/www.mozilla.org-django/bedrock
+export PROJECT=$($BIN/project)
 trap "trap - SIGTERM && kill -- -$$ && $BIN/compose stop" SIGINT SIGTERM EXIT
 
 if [ -e $BIN/../.env ]; then
