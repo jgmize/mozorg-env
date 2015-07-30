@@ -1,6 +1,7 @@
 #!/bin/bash -ex
+BIN=${0%/*}
+
 if [[ ! $MOZCOM ]]; then
-    BIN=${0%/*}
     export MOZCOM=$BIN/../apache/mozilla.com
 fi
 
